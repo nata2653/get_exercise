@@ -18,17 +18,21 @@ get();
 function addNewMovie(movie) {
   const template = document.querySelector("template").content;
   const copy = template.cloneNode(true);
+  copy.querySelector("article.movie").dataset.movieid = movie._id;
+
   copy.querySelector("h1").textContent = movie.name;
   copy.querySelector("h2").textContent = movie.year;
   copy.querySelector("p").textContent = movie.protagonist;
-  document.querySelector("#app").appendChild(copy);
+  copy.querySelector(".delete").addEventListener("click", () => {
+    deleteIt(movie._id);
+  });
 }
 
 function post() {
   const movie = {
     name: "Limitless",
-    protagonist: "santa",
-    year: 2018
+    year: 2018,
+    protagonist: "Bradley Cooper"
   };
 
   const postData = JSON.stringify(movie);
@@ -49,6 +53,22 @@ function post() {
     });
 }
 
-document.querySelector("button").addEventListener("click", elm => {
+function deleteIt(id) {
+  fetch("https://frontend2019-28cd.restdb.io/rest/movies" + id, {
+    method: "delete",
+    headers: {
+      "Content-type": "application/json; charset-utf-8",
+      "x-apikey": "5d887478fd86cb75861e25fe",
+      "cache-control": "no-cache"
+    }
+  })
+    .then(res => res.json())
+    .then(data => {
+      console.log(data);
+      document.querySelector(`.movie[data-movie_id="${id}"]`).remove();
+    });
+}
+
+document.querySelector(".add").addEventListener("click", elm => {
   post();
 });
